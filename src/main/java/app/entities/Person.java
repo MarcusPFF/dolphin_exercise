@@ -27,9 +27,13 @@ public class Person
 
     // Relationer 1:m
 
-    @OneToMany(mappedBy = "person", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "person", cascade = CascadeType.PERSIST, fetch = FetchType.EAGER) // You would never want to delete fees
     @Builder.Default  // <---- This one is necessary with @Builder
     private Set<Fee> fees = new HashSet<>();
+
+    @OneToMany(mappedBy = "person", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @Builder.Default  // <---- This one is necessary with @Builder
+    private Set<Node> nodes = new HashSet<>();
 
     // Bi-directional update
 
@@ -42,13 +46,18 @@ public class Person
         }
     }
 
-    public void addFee(Fee fee)
-    {
+    public void addFee(Fee fee) {
+        if (fee == null) return;
+        fee.setPerson(this);
         this.fees.add(fee);
-        if (fee != null)
-        {
-            fee.setPerson(this);
-        }
     }
 
+
+    public void addNote(Node node) {
+        this.nodes.add(node);
+        if (nodes != null)
+        {
+            node.setPerson(this);
+        }
+    }
 }
